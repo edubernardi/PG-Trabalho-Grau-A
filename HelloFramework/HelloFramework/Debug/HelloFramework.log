@@ -1,4 +1,3 @@
 ﻿  Origem.cpp
-C:\Users\eduar\source\repos\Trabalho Grau A\HelloFramework\HelloFramework\Origem.cpp(46,25): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\Users\eduar\source\repos\Trabalho Grau A\HelloFramework\HelloFramework\Origem.cpp(238,33): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-  HelloFramework.vcxproj -> C:\Users\eduar\source\repos\Trabalho Grau A\HelloFramework\Debug\HelloFramework.exe
+C:\Users\eduar\source\repos\Backup\Trabalho Grau A\PG-Trabalho-Grau-A\HelloFramework\HelloFramework\Origem.cpp(181,33): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+  HelloFramework.vcxproj -> C:\Users\eduar\source\repos\Backup\Trabalho Grau A\PG-Trabalho-Grau-A\HelloFramework\Debug\HelloFramework.exe
