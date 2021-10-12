@@ -44,6 +44,7 @@ int playerPositionX = 400;
 int playerPositionY = 180;
 bool playerFacingRight = true;
 bool coinsTaken[2];
+bool walking = false;
 
 // Função MAIN
 int main()
@@ -90,15 +91,17 @@ int main()
 	Shader* shader = new Shader("./shaders/sprite.vs", "./shaders/animatedsprites.fs");
 
 	GLuint backgroundTex = loadTexture("./textures/background.jpg");
-	GLuint playerTextureRight = loadTexture("./textures/playerA.png");
-	GLuint playerTextureLeft = loadTexture("./textures/playerB.png");
 	GLuint coinTexture = loadTexture("./textures/moeda.png");
 	GLuint yoshiTex = loadTexture("./textures/yoshi.png");
+	GLuint playerIdleRight = loadTexture("./textures/playerIdleRight.png");
+	GLuint playerIdleLeft = loadTexture("./textures/playerIdleLeft.png");
+	GLuint playerRunLeft = loadTexture("./textures/playerRunLeft.png");
+	GLuint playerRunRight = loadTexture("./textures/playerRunRight.png");
 
 	Sprite yoshi;
 	yoshi.setSpritesheet(yoshiTex, 2, 8);
 	yoshi.setPosition(glm::vec3(100, 100, 0));
-	yoshi.setDimention(glm::vec3(100, 100, 1));
+	yoshi.setDimention(glm::vec3(100, 100, 1));	
 	yoshi.setShader(shader);
 
 	Sprite coins[2];
@@ -112,10 +115,11 @@ int main()
 	coins[1].setPosition(glm::vec3(600, 200, 0));
 	
 	Sprite player;
-	player.setSpritesheet(playerTextureRight, 1, 1);
+	player.setSpritesheet(playerIdleRight, 1, 4);
 	player.setPosition(glm::vec3(playerPositionX, playerPositionY, 0));
-	player.setDimention(glm::vec3(65, 138, 1.0));
+	player.setDimention(glm::vec3(125, 172, 1.0));
 	player.setShader(shader);
+	player.setAnimation(6);
 
 	Sprite background;
 	background.setSpritesheet(backgroundTex, 1, 1);
@@ -156,6 +160,7 @@ int main()
 		background.update();
 		background.draw();
 		
+		Sleep(100);
 		//verificar posição e atualizar
 		if (playerPositionX > 800) {
 			playerPositionX -= 30;
@@ -167,11 +172,22 @@ int main()
 		}
 
 		if (playerFacingRight) {
-			player.setTexture(playerTextureRight);
+			if (walking) {
+				player.updateSpriteSheet(playerRunRight, 6);
+			}
+			else {
+				player.updateSpriteSheet(playerIdleRight, 4);
+			}
 		}
 		else {
-			player.setTexture(playerTextureLeft);
+			if (walking) {
+				player.updateSpriteSheet(playerRunLeft, 6);
+			}
+			else {
+				player.updateSpriteSheet(playerIdleLeft, 4);
+			}
 		}
+
 
 		//verificar colisao
 		for (int i = 0; i < 2; i++) {
@@ -186,7 +202,7 @@ int main()
 		}
 
 		yoshi.update();
-		yoshi.draw();
+		//yoshi.draw();
 		
 		player.setPosition(glm::vec3(playerPositionX, playerPositionY, 0));
 		player.update();
@@ -209,13 +225,19 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		glfwSetWindowShouldClose(window, GL_TRUE);
 
 	if (key == GLFW_KEY_D && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
-		playerPositionX += 5;
+		playerPositionX += 15;
 		playerFacingRight = true;
+		walking = true;
 	}
 	
 	if (key == GLFW_KEY_A && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
-		playerPositionX -= 5;
+		playerPositionX -= 15;
 		playerFacingRight = false;
+		walking = true;
+	}
+
+	if ((key == GLFW_KEY_A || key == GLFW_KEY_D) && action == GLFW_RELEASE) {
+		walking = false;
 	}
 
 }
