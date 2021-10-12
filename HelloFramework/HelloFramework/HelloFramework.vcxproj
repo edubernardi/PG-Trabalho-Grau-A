@@ -157,7 +157,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\animatedsprites.fs" />
-    <None Include="shaders\animatedsprites.vs" />
     <None Include="shaders\sprite.fs" />
     <None Include="shaders\sprite.vs" />
   </ItemGroup>

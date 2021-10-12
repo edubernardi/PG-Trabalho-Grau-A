@@ -1,5 +1,4 @@
 #include "Sprite.h"
-
 void Sprite::setSpritesheet(GLuint texID, int nAnimations, int nFrames)
 {
 	this->texID = texID;
@@ -13,10 +12,10 @@ void Sprite::setSpritesheet(GLuint texID, int nAnimations, int nFrames)
 	dy = 1.0 / (float)nAnimations;
 
 	float vertices[]{
-		0.5f, 0.5f, 0.0f,	1.0f, 0.0f, 0.0f,	dx, dy,
-		0.5f, -0.5f, 0.0f,	0.0f, 1.0f, 0.0f,	dx, 0.0f,
-		-0.5f, -0.5f, 0.0f,	0.0f, 0.0f, 1.0f,	0.0f, 0.0f,
-		-0.5f, 0.5f, 0.0f,	1.0f, 1.0f, 0.0f,	0.0f, dy,
+		0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,	dx, dy,
+		0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,	dx, 0.0f,
+		-0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,	0.0f, 0.0f,
+		-0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 0.0f,	0.0f, dy,
 	};
 
 	unsigned int indices[] = {

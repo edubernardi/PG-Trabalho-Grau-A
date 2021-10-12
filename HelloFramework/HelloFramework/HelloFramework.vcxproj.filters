@@ -61,8 +61,5 @@
     <None Include="shaders\animatedsprites.fs">
       <Filter>shaders</Filter>
     </None>
-    <None Include="shaders\animatedsprites.vs">
-      <Filter>shaders</Filter>
-    </None>
   </ItemGroup>
 </Project>

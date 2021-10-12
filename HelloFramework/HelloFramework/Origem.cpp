@@ -85,44 +85,42 @@ int main()
 	cout << "OpenGL version supported " << version << endl;
 
 	// Compilando e buildando o programa de shader
-	Shader* shader = new Shader("./shaders/sprite.vs", "./shaders/sprite.fs");
-	Shader* sprShader = new Shader("./shaders/animatedsprites.vs", "./shaders/animatedsprites.fs");
+	//Shader* shader = new Shader("./shaders/sprite.vs", "./shaders/sprite.fs");
+	//Shader* sprShader = new Shader("./shaders/sprite.vs", "./shaders/animatedsprites.fs");
+	Shader* shader = new Shader("./shaders/sprite.vs", "./shaders/animatedsprites.fs");
 
 	GLuint backgroundTex = loadTexture("./textures/background.jpg");
 	GLuint playerTextureRight = loadTexture("./textures/playerA.png");
 	GLuint playerTextureLeft = loadTexture("./textures/playerB.png");
 	GLuint coinTexture = loadTexture("./textures/moeda.png");
-	GLuint yoshiTex = loadTexture("./texture/yoshi.png");
+	GLuint yoshiTex = loadTexture("./textures/yoshi.png");
 
 	Sprite yoshi;
 	yoshi.setSpritesheet(yoshiTex, 2, 8);
-	yoshi.setPosition(glm::vec3(300, 400, 0));
-	yoshi.setDimention(glm::vec3(50, 50, 1));
+	yoshi.setPosition(glm::vec3(100, 100, 0));
+	yoshi.setDimention(glm::vec3(100, 100, 1));
 	yoshi.setShader(shader);
 
-	Object coins[2];
+	Sprite coins[2];
 
 	for (int i = 0; i < 2; i++) {
-		coins[i].initialize();
+		coins[i].setSpritesheet(coinTexture, 1, 1);
 		coins[i].setDimention(glm::vec3(80, 80, 1.0));
-		coins[i].setTexture(coinTexture);
 		coins[i].setShader(shader);
 	}
 	coins[0].setPosition(glm::vec3(50, 150, 0));
 	coins[1].setPosition(glm::vec3(600, 200, 0));
 	
-	Object player;
-	player.initialize();
+	Sprite player;
+	player.setSpritesheet(playerTextureRight, 1, 1);
 	player.setPosition(glm::vec3(playerPositionX, playerPositionY, 0));
 	player.setDimention(glm::vec3(65, 138, 1.0));
-	player.setTexture(playerTextureRight);
 	player.setShader(shader);
 
-	Object background;
-	background.initialize();
+	Sprite background;
+	background.setSpritesheet(backgroundTex, 1, 1);
 	background.setPosition(glm::vec3(400, 300, 0));
 	background.setDimention(glm::vec3(800, 600, 1.0));
-	background.setTexture(backgroundTex);
 	background.setShader(shader);
 
 	GLint projLoc = glGetUniformLocation(shader->Program, "projection");
@@ -147,7 +145,6 @@ int main()
 
 		//Enviar a matriz de projeção ortográfica para o shader
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(ortho));
-
 
 		// Limpa o buffer de cor
 		glClearColor(0.3f, 0.3f, 0.3f, 1.0f); //cor de fundo
@@ -189,13 +186,12 @@ int main()
 		}
 
 		yoshi.update();
-		//yoshi.draw();
+		yoshi.draw();
 		
 		player.setPosition(glm::vec3(playerPositionX, playerPositionY, 0));
 		player.update();
 		player.draw();
 
-		
 		// Troca os buffers da tela
 		glfwSwapBuffers(window);
 	}

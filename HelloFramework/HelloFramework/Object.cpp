@@ -56,7 +56,6 @@ void Object::initialize()
 	scale = glm::vec3(1, 1, 1);
 	angle = 0;
 	shader = NULL;
-	texID = 0;
 }
 
 void Object::update()
