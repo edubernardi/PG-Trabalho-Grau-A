@@ -28,9 +28,9 @@ public:
 	inline void setAngle(float angle) { this->angle = angle; }
 	inline void setTexture(GLuint texID) { this->texID = texID; }
 	inline void setShader(Shader* shader) { this->shader = shader; }
-	glm::vec3 getTopRightVertex();
-	glm::vec3 getBottomLeftVertex();
-
+	glm::vec3 getTopRightVertex(); //get para posição do vértice superior direito do quadrilátero, para detecção de colisão
+	glm::vec3 getBottomLeftVertex(); //get para posição do vértice inferior esquerdo do quadrilátero, para detecção de colisão
+	inline glm::vec3 getPosition() { return position; }
 protected:
 
 	void setRotation(float angle, glm::vec3 axis, bool reset = false);

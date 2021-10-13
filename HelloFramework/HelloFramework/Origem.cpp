@@ -40,11 +40,9 @@ int loadTexture(string path);
 // Dimensões da janela (pode ser alterado em tempo de execução)
 const GLuint WIDTH = 800, HEIGHT = 600;
 
-int playerPositionX = 400;
-int playerPositionY = 180;
 bool playerFacingRight = true;
-bool coinsTaken[2];
 bool walking = false;
+bool coinsTaken[2];
 int attacking = 0;
 
 // Função MAIN
@@ -87,13 +85,11 @@ int main()
 	cout << "OpenGL version supported " << version << endl;
 
 	// Compilando e buildando o programa de shader
-	//Shader* shader = new Shader("./shaders/sprite.vs", "./shaders/sprite.fs");
-	//Shader* sprShader = new Shader("./shaders/sprite.vs", "./shaders/animatedsprites.fs");
 	Shader* shader = new Shader("./shaders/sprite.vs", "./shaders/animatedsprites.fs");
 
+	//carregando imagens
 	GLuint backgroundTex = loadTexture("./textures/background.jpg");
 	GLuint coinTexture = loadTexture("./textures/moeda.png");
-	GLuint yoshiTex = loadTexture("./textures/yoshi.png");
 	GLuint playerIdleRight = loadTexture("./textures/playerIdleRight.png");
 	GLuint playerIdleLeft = loadTexture("./textures/playerIdleLeft.png");
 	GLuint playerRunLeft = loadTexture("./textures/playerRunLeft.png");
@@ -101,12 +97,7 @@ int main()
 	GLuint playerAtackLeft = loadTexture("./textures/attackingLeft.png");
 	GLuint playerAtackRight = loadTexture("./textures/attackingRight.png");
 
-	Sprite yoshi;
-	yoshi.setSpritesheet(yoshiTex, 2, 8);
-	yoshi.setPosition(glm::vec3(100, 100, 0));
-	yoshi.setDimention(glm::vec3(100, 100, 1));
-	yoshi.setShader(shader);
-
+	//inicializando moedas
 	Sprite coins[2];
 
 	for (int i = 0; i < 2; i++) {
@@ -117,13 +108,15 @@ int main()
 	coins[0].setPosition(glm::vec3(50, 150, 0));
 	coins[1].setPosition(glm::vec3(600, 200, 0));
 
+	//inicializando player
 	Sprite player;
 	player.setSpritesheet(playerIdleRight, 1, 4);
-	player.setPosition(glm::vec3(playerPositionX, playerPositionY, 0));
+	player.setPosition(glm::vec3(400, 180, 0));
 	player.setDimention(glm::vec3(125, 172, 1.0));
 	player.setShader(shader);
 	player.setAnimation(6);
 
+	//inicializando background
 	Sprite background;
 	background.setSpritesheet(backgroundTex, 1, 1);
 	background.setPosition(glm::vec3(400, 300, 0));
@@ -159,34 +152,33 @@ int main()
 
 		glLineWidth(10);
 		glPointSize(10);
+		
+		//sleep para desacelerar as aniamcoes
+		Sleep(100);
 
+		//draw do plano de fundo
 		background.update();
 		background.draw();
 
-		Sleep(100);
-		//verificar posição e atualizar
-		if (playerPositionX > 800) {
-			playerPositionX -= 30;
-			playerFacingRight = false;
-		}
-		if (playerPositionX < 0) {
-			playerPositionX += 30;
-			playerFacingRight = true;
-		}
-
-		if (attacking) {
+		// verificar se o jogador está atacando, define a spritesheet e frame atual de acordo
+		if (attacking > 0) {
 			if (playerFacingRight) {
 				player.updateSpriteSheet(playerAtackRight, 20);
 			}
 			else {
 				player.updateSpriteSheet(playerAtackLeft, 20);
 			}
+			if (attacking == 20) {
+				player.setFrame(0);
+			}
 			attacking -= 1;
 		}
+		// se nao esta atacando, determina se o jogador esta caminhando e atualiza o frame, spritesheet e posicao
 		else {
 			if (playerFacingRight) {
 				if (walking) {
 					player.updateSpriteSheet(playerRunRight, 6);
+					player.setPosition(glm::vec3(player.getPosition().x + 15, player.getPosition().y, 0));
 				}
 				else {
 					player.updateSpriteSheet(playerIdleRight, 4);
@@ -195,6 +187,7 @@ int main()
 			else {
 				if (walking) {
 					player.updateSpriteSheet(playerRunLeft, 6);
+					player.setPosition(glm::vec3(player.getPosition().x - 15, player.getPosition().y, 0));
 				}
 				else {
 					player.updateSpriteSheet(playerIdleLeft, 4);
@@ -202,9 +195,17 @@ int main()
 			}
 		}
 
+		//verificar se o jogador esta saindo da tela e corrige
+		if (player.getPosition().x > 800) {
+			player.setPosition(glm::vec3(player.getPosition().x - 30, player.getPosition().y, 1));
+			playerFacingRight = false;
+		}
+		if (player.getPosition().x < 0) {
+			player.setPosition(glm::vec3(player.getPosition().x + 30, player.getPosition().y, 1));
+			playerFacingRight = true;
+		}
 		
-
-		//verificar colisao
+		//verificar colisao e desenha as moedas caso ainda não tenham sido pegas
 		for (int i = 0; i < 2; i++) {
 			coins[i].setAngle(glfwGetTime());
 			if ((player.getBottomLeftVertex().x +30) < coins[i].getTopRightVertex().x &&
@@ -217,10 +218,7 @@ int main()
 			}
 		}
 
-		yoshi.update();
-		//yoshi.draw();
-
-		player.setPosition(glm::vec3(playerPositionX, playerPositionY, 0));
+		//desenha player
 		player.update();
 		player.draw();
 
@@ -240,15 +238,15 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
 
+	//verifica se o jogador esta atacando
+	//nao eh possivel controlar o personagem enquanto ele esta no meio da acao de ataque
 	if (attacking == 0) {
 		if (key == GLFW_KEY_D && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
-			playerPositionX += 15;
 			playerFacingRight = true;
 			walking = true;
 		}
 
 		if (key == GLFW_KEY_A && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
-			playerPositionX -= 15;
 			playerFacingRight = false;
 			walking = true;
 		}
@@ -259,7 +257,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 		if (key == GLFW_KEY_X && action == GLFW_PRESS) {
 			walking = false;
-			attacking = 19;
+			attacking = 20;
 		}
 	}
 }
