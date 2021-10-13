@@ -1,6 +1,6 @@
 /* Trabalho de Grau A - 2021/2
  * Eduardo Bernardi
- * 
+ *
  * Utilizado Framework desenvolvido pela professora Rossana Baptista Queiroz
  * para a disciplina de Processamento Gráfico - Jogos Digitais - Unisinos
  *
@@ -45,6 +45,7 @@ int playerPositionY = 180;
 bool playerFacingRight = true;
 bool coinsTaken[2];
 bool walking = false;
+int attacking = 0;
 
 // Função MAIN
 int main()
@@ -97,11 +98,13 @@ int main()
 	GLuint playerIdleLeft = loadTexture("./textures/playerIdleLeft.png");
 	GLuint playerRunLeft = loadTexture("./textures/playerRunLeft.png");
 	GLuint playerRunRight = loadTexture("./textures/playerRunRight.png");
+	GLuint playerAtackLeft = loadTexture("./textures/attackingLeft.png");
+	GLuint playerAtackRight = loadTexture("./textures/attackingRight.png");
 
 	Sprite yoshi;
 	yoshi.setSpritesheet(yoshiTex, 2, 8);
 	yoshi.setPosition(glm::vec3(100, 100, 0));
-	yoshi.setDimention(glm::vec3(100, 100, 1));	
+	yoshi.setDimention(glm::vec3(100, 100, 1));
 	yoshi.setShader(shader);
 
 	Sprite coins[2];
@@ -113,7 +116,7 @@ int main()
 	}
 	coins[0].setPosition(glm::vec3(50, 150, 0));
 	coins[1].setPosition(glm::vec3(600, 200, 0));
-	
+
 	Sprite player;
 	player.setSpritesheet(playerIdleRight, 1, 4);
 	player.setPosition(glm::vec3(playerPositionX, playerPositionY, 0));
@@ -159,7 +162,7 @@ int main()
 
 		background.update();
 		background.draw();
-		
+
 		Sleep(100);
 		//verificar posição e atualizar
 		if (playerPositionX > 800) {
@@ -171,28 +174,41 @@ int main()
 			playerFacingRight = true;
 		}
 
-		if (playerFacingRight) {
-			if (walking) {
-				player.updateSpriteSheet(playerRunRight, 6);
+		if (attacking) {
+			if (playerFacingRight) {
+				player.updateSpriteSheet(playerAtackRight, 20);
 			}
 			else {
-				player.updateSpriteSheet(playerIdleRight, 4);
+				player.updateSpriteSheet(playerAtackLeft, 20);
 			}
+			attacking -= 1;
 		}
 		else {
-			if (walking) {
-				player.updateSpriteSheet(playerRunLeft, 6);
+			if (playerFacingRight) {
+				if (walking) {
+					player.updateSpriteSheet(playerRunRight, 6);
+				}
+				else {
+					player.updateSpriteSheet(playerIdleRight, 4);
+				}
 			}
 			else {
-				player.updateSpriteSheet(playerIdleLeft, 4);
+				if (walking) {
+					player.updateSpriteSheet(playerRunLeft, 6);
+				}
+				else {
+					player.updateSpriteSheet(playerIdleLeft, 4);
+				}
 			}
 		}
 
+		
 
 		//verificar colisao
 		for (int i = 0; i < 2; i++) {
 			coins[i].setAngle(glfwGetTime());
-			if (player.getBottomLeftVertex().x < coins[i].getTopRightVertex().x && player.getTopRightVertex().x > coins[i].getBottomLeftVertex().x) {
+			if ((player.getBottomLeftVertex().x +30) < coins[i].getTopRightVertex().x &&
+				(player.getTopRightVertex().x -30) > coins[i].getBottomLeftVertex().x)  {
 				coinsTaken[i] = true;
 			}
 			if (!coinsTaken[i]) {
@@ -203,7 +219,7 @@ int main()
 
 		yoshi.update();
 		//yoshi.draw();
-		
+
 		player.setPosition(glm::vec3(playerPositionX, playerPositionY, 0));
 		player.update();
 		player.draw();
@@ -224,22 +240,28 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
 
-	if (key == GLFW_KEY_D && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
-		playerPositionX += 15;
-		playerFacingRight = true;
-		walking = true;
-	}
-	
-	if (key == GLFW_KEY_A && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
-		playerPositionX -= 15;
-		playerFacingRight = false;
-		walking = true;
-	}
+	if (attacking == 0) {
+		if (key == GLFW_KEY_D && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
+			playerPositionX += 15;
+			playerFacingRight = true;
+			walking = true;
+		}
 
-	if ((key == GLFW_KEY_A || key == GLFW_KEY_D) && action == GLFW_RELEASE) {
-		walking = false;
-	}
+		if (key == GLFW_KEY_A && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
+			playerPositionX -= 15;
+			playerFacingRight = false;
+			walking = true;
+		}
 
+		if ((key == GLFW_KEY_A || key == GLFW_KEY_D) && action == GLFW_RELEASE) {
+			walking = false;
+		}
+
+		if (key == GLFW_KEY_X && action == GLFW_PRESS) {
+			walking = false;
+			attacking = 19;
+		}
+	}
 }
 
 int loadTexture(string path)
