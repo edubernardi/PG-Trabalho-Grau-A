@@ -153,7 +153,7 @@ int main()
 		glLineWidth(10);
 		glPointSize(10);
 		
-		//sleep para desacelerar as aniamcoes
+		//sleep para desacelerar as animacoes
 		Sleep(100);
 
 		//draw do plano de fundo
